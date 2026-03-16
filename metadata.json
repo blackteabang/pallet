@@ -1,0 +1,5 @@
+{
+  "name": "모니터팔렛트관리",
+  "description": "A comprehensive logistics solution for managing monitor inventory by pallets, featuring real-time tracking, manifest generation, and Excel export capabilities.",
+  "requestFramePermissions": []
+}
