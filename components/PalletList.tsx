@@ -249,66 +249,66 @@ const PalletList: React.FC<PalletListProps> = ({
         </svg>
       </button>
 
-      <div className={`${isMobileFilterOpen ? 'block' : 'hidden'} md:block bg-white p-5 rounded-xl border border-slate-200 shadow-sm grid grid-cols-1 md:grid-cols-6 gap-5`}>
-        <div>
-          <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 tracking-wider">팔레트 ID</label>
+      <div className={`${isMobileFilterOpen ? 'block' : 'hidden'} md:block bg-white p-5 rounded-xl border border-slate-200 shadow-sm grid grid-cols-1 gap-4 md:flex md:flex-nowrap md:items-end md:gap-3 md:overflow-x-auto`}>
+        <div className="md:min-w-[140px] md:flex-1">
+          <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 tracking-wider md:sr-only">팔레트 ID</label>
           <input
             type="text"
             value={filter.palletId}
             onChange={e => setFilter(f => ({ ...f, palletId: e.target.value }))}
             placeholder="예: P-2026..."
-            className="w-full bg-white border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+            className="w-full h-11 px-3 bg-white border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
           />
         </div>
-        <div>
-          <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 tracking-wider">위치</label>
+        <div className="md:min-w-[120px] md:flex-1">
+          <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 tracking-wider md:sr-only">위치</label>
           <input
             type="text"
             value={filter.location}
             onChange={e => setFilter(f => ({ ...f, location: e.target.value }))}
             placeholder="예: A-01"
-            className="w-full bg-white border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+            className="w-full h-11 px-3 bg-white border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
           />
         </div>
-        <div>
-          <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 tracking-wider">자산 주체 본부</label>
+        <div className="md:min-w-[140px] md:flex-1">
+          <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 tracking-wider md:sr-only">자산 주체 본부</label>
           <select
             value={filter.dept}
             onChange={e => setFilter(f => ({ ...f, dept: e.target.value }))}
-            className="w-full bg-white border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+            className="w-full h-11 px-3 bg-white border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
           >
             <option value="">전체 본부</option>
             {DEPARTMENTS.map(d => <option key={d} value={d}>{d}</option>)}
           </select>
         </div>
-        <div>
-          <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 tracking-wider">제조사 브랜드</label>
+        <div className="md:min-w-[140px] md:flex-1">
+          <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 tracking-wider md:sr-only">제조사 브랜드</label>
           <select
             value={filter.brand}
             onChange={e => setFilter(f => ({ ...f, brand: e.target.value }))}
-            className="w-full bg-white border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+            className="w-full h-11 px-3 bg-white border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
           >
             <option value="">전체 브랜드</option>
             {BRANDS.map(b => <option key={b} value={b}>{b}</option>)}
           </select>
         </div>
-        <div>
-          <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 tracking-wider">인치</label>
+        <div className="md:min-w-[120px] md:flex-1">
+          <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 tracking-wider md:sr-only">인치</label>
           <select
             value={filter.inch}
             onChange={e => setFilter(f => ({ ...f, inch: e.target.value }))}
-            className="w-full bg-white border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+            className="w-full h-11 px-3 bg-white border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
           >
             <option value="">전체 인치</option>
             {INCHES.map(i => <option key={i} value={i}>{i}"</option>)}
           </select>
         </div>
-        <div>
-          <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 tracking-wider">양/불 구분</label>
+        <div className="md:min-w-[120px] md:flex-1">
+          <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 tracking-wider md:sr-only">양/불 구분</label>
           <select
             value={filter.grade}
             onChange={e => setFilter(f => ({ ...f, grade: e.target.value }))}
-            className="w-full bg-white border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+            className="w-full h-11 px-3 bg-white border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
           >
             <option value="">전체 상태</option>
             <option value={MonitorGrade.GOOD}>양품</option>
