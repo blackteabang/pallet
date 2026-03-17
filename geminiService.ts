@@ -1,4 +1,6 @@
 
+// AI에게 현재 재고를 요약해 달라고 부탁하는 함수입니다.
+// 결과는 대시보드 오른쪽 'AI 제안' 박스에 표시돼요.
 import { GoogleGenAI } from "@google/genai";
 import { Pallet } from "./types";
 

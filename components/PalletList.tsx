@@ -1,7 +1,11 @@
 
+// 이 화면은 '팔레트 재고 현황' 목록입니다.
+// - 위쪽에서 검색/필터를 고르고
+// - 가운데에서 목록을 보고
+// - 필요한 버튼(인쇄/수정/삭제)을 눌러요.
 import React, { useState, useMemo } from 'react';
 import { Pallet, MonitorGrade, MonitorItem, PowerType } from '../types';
-import { DEPARTMENTS, BRANDS } from '../constants';
+import { DEPARTMENTS, BRANDS, INCHES } from '../constants';
 import PalletForm from './PalletForm';
 
 interface PalletListProps {
@@ -33,14 +37,29 @@ const PalletList: React.FC<PalletListProps> = ({
     dept: '',
     brand: '',
     grade: '',
+    palletId: '',
+    location: '',
+    inch: '',
   });
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
+  const activeFilterCount = useMemo(() => {
+    return Object.entries(filter).reduce((count, [, value]) => (String(value).trim() ? count + 1 : count), 0);
+  }, [filter]);
+
+  // 선택한 조건에 맞는 데이터만 골라 보여줍니다.
   const filteredPallets = useMemo(() => {
+    const palletIdQuery = filter.palletId.trim().toLowerCase();
+    const locationQuery = filter.location.trim().toLowerCase();
+
     return pallets.filter(p => {
       const matchDept = !filter.dept || p.department === filter.dept;
       const matchBrand = !filter.brand || p.items.some(i => i.brand === filter.brand);
       const matchGrade = !filter.grade || p.items.some(i => i.grade === filter.grade);
-      return matchDept && matchBrand && matchGrade;
+      const matchInch = !filter.inch || p.items.some(i => i.inch === filter.inch);
+      const matchPalletId = !palletIdQuery || String(p.id).toLowerCase().includes(palletIdQuery);
+      const matchLocation = !locationQuery || String(p.location || '').toLowerCase().includes(locationQuery);
+      return matchDept && matchBrand && matchGrade && matchInch && matchPalletId && matchLocation;
     });
   }, [pallets, filter]);
 
@@ -55,6 +74,7 @@ const PalletList: React.FC<PalletListProps> = ({
     onUpdatePallet(palletId, { items: updatedItems });
   };
 
+  // 엑셀에서 열 수 있는 CSV 파일로 저장해요.
   const exportToCsv = () => {
     const headers = ['팔레트ID', '본부명', '위치', '구분', '브랜드', '인치', '전원방식', '수량', '메모', '최종업데이트'];
     const rows = filteredPallets.flatMap(p =>
@@ -88,6 +108,7 @@ const PalletList: React.FC<PalletListProps> = ({
     document.body.removeChild(link);
   };
 
+  // JSON 형태로도 저장할 수 있어요(복구용 백업 느낌).
   const exportToJson = () => {
     const payload = {
       exportedAt: new Date().toISOString(),
@@ -112,6 +133,7 @@ const PalletList: React.FC<PalletListProps> = ({
     return segments.slice(0, max).join('');
   };
 
+  // 위치는 목록에서 바로 바꿀 수 있어요. 글자 수는 6글자까지!
   const handleLocationChange = (palletId: string, nextLocation: string) => {
     const limited = limitToGraphemes(nextLocation, 6);
     const pallet = pallets.find(p => p.id === palletId);
@@ -137,12 +159,46 @@ const PalletList: React.FC<PalletListProps> = ({
         }
       `}</style>
 
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="flex items-start justify-between gap-3">
         <h2 className="text-2xl font-bold text-slate-900 tracking-tight">팔레트 재고 현황</h2>
-        <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+
+        <div className="md:hidden flex items-center justify-end gap-2">
           <button
             onClick={exportToCsv}
-            className="w-full sm:flex-1 md:w-auto md:flex-none px-4 py-2 border border-slate-300 rounded-lg text-slate-700 font-medium hover:bg-slate-50 flex items-center justify-center space-x-2 transition-colors"
+            aria-label="Excel 출력"
+            title="Excel 출력"
+            className="h-10 w-10 inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 transition-colors"
+          >
+            <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+          </button>
+          <button
+            onClick={exportToJson}
+            aria-label="로컬 저장"
+            title="로컬 저장"
+            className="h-10 w-10 inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 transition-colors"
+          >
+            <svg className="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M12 12v7m0 0l-3-3m3 3l3-3M8 7h8M8 3h8" />
+            </svg>
+          </button>
+          <button
+            onClick={onAddNew}
+            aria-label="신규 팔레트 등록"
+            title="신규 팔레트 등록"
+            className="h-10 w-10 inline-flex items-center justify-center rounded-lg bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-100 transition-all"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="hidden md:flex items-center gap-2">
+          <button
+            onClick={exportToCsv}
+            className="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 font-medium hover:bg-slate-50 flex items-center justify-center space-x-2 transition-colors"
           >
             <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -151,7 +207,7 @@ const PalletList: React.FC<PalletListProps> = ({
           </button>
           <button
             onClick={exportToJson}
-            className="w-full sm:flex-1 md:w-auto md:flex-none px-4 py-2 border border-slate-300 rounded-lg text-slate-700 font-medium hover:bg-slate-50 flex items-center justify-center space-x-2 transition-colors"
+            className="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 font-medium hover:bg-slate-50 flex items-center justify-center space-x-2 transition-colors"
           >
             <svg className="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M12 12v7m0 0l-3-3m3 3l3-3M8 7h8M8 3h8" />
@@ -160,7 +216,7 @@ const PalletList: React.FC<PalletListProps> = ({
           </button>
           <button
             onClick={onAddNew}
-            className="w-full sm:flex-1 md:w-auto md:flex-none px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 flex items-center justify-center space-x-2 shadow-lg shadow-blue-100 transition-all"
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 flex items-center justify-center space-x-2 shadow-lg shadow-blue-100 transition-all"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -170,7 +226,50 @@ const PalletList: React.FC<PalletListProps> = ({
         </div>
       </div>
 
-      <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm grid grid-cols-1 md:grid-cols-3 gap-5">
+      <button
+        type="button"
+        onClick={() => setIsMobileFilterOpen(v => !v)}
+        className="md:hidden w-full bg-white px-4 py-3 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between"
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-bold text-slate-900">검색/필터</span>
+          {activeFilterCount > 0 && (
+            <span className="text-[10px] font-black text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full">
+              {activeFilterCount}
+            </span>
+          )}
+        </div>
+        <svg
+          className={`w-5 h-5 text-slate-400 transition-transform ${isMobileFilterOpen ? 'rotate-180' : ''}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      <div className={`${isMobileFilterOpen ? 'block' : 'hidden'} md:block bg-white p-5 rounded-xl border border-slate-200 shadow-sm grid grid-cols-1 md:grid-cols-6 gap-5`}>
+        <div>
+          <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 tracking-wider">팔레트 ID</label>
+          <input
+            type="text"
+            value={filter.palletId}
+            onChange={e => setFilter(f => ({ ...f, palletId: e.target.value }))}
+            placeholder="예: P-2026..."
+            className="w-full border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+          />
+        </div>
+        <div>
+          <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 tracking-wider">위치</label>
+          <input
+            type="text"
+            value={filter.location}
+            onChange={e => setFilter(f => ({ ...f, location: e.target.value }))}
+            placeholder="예: A-01"
+            className="w-full border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+          />
+        </div>
         <div>
           <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 tracking-wider">자산 주체 본부</label>
           <select
@@ -191,6 +290,17 @@ const PalletList: React.FC<PalletListProps> = ({
           >
             <option value="">전체 브랜드</option>
             {BRANDS.map(b => <option key={b} value={b}>{b}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 tracking-wider">인치</label>
+          <select
+            value={filter.inch}
+            onChange={e => setFilter(f => ({ ...f, inch: e.target.value }))}
+            className="w-full border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+          >
+            <option value="">전체 인치</option>
+            {INCHES.map(i => <option key={i} value={i}>{i}"</option>)}
           </select>
         </div>
         <div>
@@ -217,103 +327,107 @@ const PalletList: React.FC<PalletListProps> = ({
         </div>
       )}
 
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="md:hidden divide-y divide-slate-100">
+      <div className="md:bg-white md:rounded-xl md:border md:border-slate-200 md:shadow-sm md:overflow-hidden">
+        <div className="md:hidden space-y-4">
           {filteredPallets.map(p => {
             const totalQty = p.items.reduce((sum, item) => sum + item.quantity, 0);
 
             return (
-              <div key={p.id} className="p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-mono text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-md">{p.id}</span>
-                      <span className="text-[10px] text-slate-400 font-medium">{p.lastUpdated}</span>
-                    </div>
-                    <div className="mt-2 font-bold text-slate-900 text-sm break-words">{p.department}</div>
-                    <div className="mt-1">
-                      <input
-                        type="text"
-                        value={p.location || ''}
-                        onChange={(e) => handleLocationChange(p.id, e.target.value)}
-                        placeholder="-"
-                        className="w-28 max-w-full h-8 px-2 text-[11px] font-semibold border border-slate-200 rounded-md bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                      />
-                    </div>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <div className="text-2xl font-black text-slate-800 leading-none">{totalQty}</div>
-                  </div>
-                </div>
-
-                <div className="mt-3 space-y-2">
-                  {p.items.map((item) => (
-                    <div key={item.id} className="p-3 bg-slate-50 rounded-lg border border-slate-200 flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className={`text-[10px] px-1.5 py-0.5 rounded font-black tracking-tighter shrink-0 ${item.grade === MonitorGrade.GOOD ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}>
-                            {item.grade}
-                          </span>
-                          <span className="text-sm font-semibold text-slate-700 break-words">
-                            {item.brand} {item.inch}"
-                          </span>
-                        </div>
-                        <div className="mt-1 text-[11px] text-slate-500 font-semibold">
-                          전원: {getPowerLabel(item.powerType)}
-                        </div>
+              <div key={p.id} className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                <div className="p-4 bg-slate-50/50 border-b border-slate-200">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-mono text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-md">{p.id}</span>
+                        <span className="text-[10px] text-slate-400 font-medium">{p.lastUpdated}</span>
                       </div>
-
-                      <div className="shrink-0 w-20">
+                      <div className="mt-2 font-bold text-slate-900 text-sm break-words">{p.department}</div>
+                      <div className="mt-1">
                         <input
-                          type="number"
-                          className="w-full h-9 px-2 text-sm font-black border border-slate-200 rounded-md bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-center"
-                          value={item.quantity}
-                          onChange={(e) => handleQuantityChange(p.id, item.id, parseInt(e.target.value) || 0)}
-                          placeholder="0"
+                          type="text"
+                          value={p.location || ''}
+                          onChange={(e) => handleLocationChange(p.id, e.target.value)}
+                          placeholder="-"
+                          className="w-28 max-w-full h-8 px-2 text-[11px] font-semibold border border-slate-200 rounded-md bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                         />
                       </div>
                     </div>
-                  ))}
-                </div>
-
-                <div className="mt-3 p-3 bg-slate-50/50 rounded-lg border border-slate-100">
-                  <div className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Memo</div>
-                  <div className="mt-1 text-[11px] text-slate-600 whitespace-pre-wrap break-words">
-                    {p.memo || '별도 기록된 특이사항이 없습니다.'}
+                    <div className="text-right shrink-0">
+                      <div className="text-2xl font-black text-slate-800 leading-none">{totalQty}</div>
+                    </div>
                   </div>
                 </div>
 
-                <div className="mt-3 flex gap-2">
-                  <button
-                    onClick={() => onPrint(p.id)}
-                    className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-slate-600 bg-white hover:bg-slate-50 transition-colors flex items-center justify-center gap-2"
-                    title="헌품표 출력"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                    </svg>
-                    <span className="text-sm font-semibold">인쇄</span>
-                  </button>
-                  <button
-                    onClick={() => onEdit(p.id)}
-                    className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-slate-600 bg-white hover:bg-slate-50 transition-colors flex items-center justify-center gap-2"
-                    title="품목 수정/추가"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    <span className="text-sm font-semibold">수정</span>
-                  </button>
-                  <button
-                    onClick={() => onDelete(p.id)}
-                    className="flex-1 px-3 py-2 rounded-lg border border-rose-200 text-rose-600 bg-white hover:bg-rose-50 transition-colors flex items-center justify-center gap-2"
-                    title="삭제"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                    <span className="text-sm font-semibold">삭제</span>
-                  </button>
+                <div className="p-4">
+                  <div className="space-y-2">
+                    {p.items.map((item) => (
+                      <div key={item.id} className="p-3 bg-slate-50 rounded-lg border border-slate-200 flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className={`text-[10px] px-1.5 py-0.5 rounded font-black tracking-tighter shrink-0 ${item.grade === MonitorGrade.GOOD ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}>
+                              {item.grade}
+                            </span>
+                            <span className="text-sm font-semibold text-slate-700 break-words">
+                              {item.brand} {item.inch}"
+                            </span>
+                          </div>
+                          <div className="mt-1 text-[11px] text-slate-500 font-semibold">
+                            전원: {getPowerLabel(item.powerType)}
+                          </div>
+                        </div>
+
+                        <div className="shrink-0 w-20">
+                          <input
+                            type="number"
+                            className="w-full h-9 px-2 text-sm font-black border border-slate-200 rounded-md bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-center"
+                            value={item.quantity}
+                            onChange={(e) => handleQuantityChange(p.id, item.id, parseInt(e.target.value) || 0)}
+                            placeholder="0"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-3 p-3 bg-slate-50/50 rounded-lg border border-slate-100">
+                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Memo</div>
+                    <div className="mt-1 text-[11px] text-slate-600 whitespace-pre-wrap break-words">
+                      {p.memo || '별도 기록된 특이사항이 없습니다.'}
+                    </div>
+                  </div>
+
+                  <div className="mt-3 flex justify-end gap-2">
+                    <button
+                      onClick={() => onPrint(p.id)}
+                      aria-label="헌품표 출력"
+                      title="헌품표 출력"
+                      className="h-10 w-10 inline-flex items-center justify-center rounded-lg border border-slate-200 text-slate-600 bg-white hover:bg-slate-50 transition-colors"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => onEdit(p.id)}
+                      aria-label="품목 수정/추가"
+                      title="품목 수정/추가"
+                      className="h-10 w-10 inline-flex items-center justify-center rounded-lg border border-slate-200 text-slate-600 bg-white hover:bg-slate-50 transition-colors"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => onDelete(p.id)}
+                      aria-label="삭제"
+                      title="삭제"
+                      className="h-10 w-10 inline-flex items-center justify-center rounded-lg border border-rose-200 text-rose-600 bg-white hover:bg-rose-50 transition-colors"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               </div>
             );

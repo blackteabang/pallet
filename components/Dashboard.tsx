@@ -1,4 +1,6 @@
 
+// 대시보드는 창고 현황을 한눈에 보여주는 화면입니다.
+// 카드로 요약 숫자를 보여주고, 아래에는 팔레트 요약 카드가 나열돼요.
 import React from 'react';
 import { Pallet, MonitorGrade } from '../types';
 
@@ -9,6 +11,7 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ pallets, insights, onViewList }) => {
+  // 전체 수량, 양품/불량 수량, 브랜드 분포 등을 계산합니다.
   const stats = React.useMemo(() => {
     let totalMonitors = 0;
     let goodMonitors = 0;
@@ -32,6 +35,7 @@ const Dashboard: React.FC<DashboardProps> = ({ pallets, insights, onViewList }) 
     return { totalPallets: pallets.length, totalMonitors, goodMonitors, badMonitors, topBrands };
   }, [pallets]);
 
+  // 각 팔레트의 간단 요약(아이디/위치/본부/품목/수량)을 만들어요.
   const palletSummaries = React.useMemo(() => {
     return pallets.slice(0, 12).map(p => {
       const totalQty = p.items.reduce((sum, item) => sum + item.quantity, 0);
@@ -62,7 +66,7 @@ const Dashboard: React.FC<DashboardProps> = ({ pallets, insights, onViewList }) 
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
         <StatCard title="총 팔레트 수" value={stats.totalPallets} unit="개" color="bg-blue-500" />
         <StatCard title="총 모니터 재고" value={stats.totalMonitors} unit="대" color="bg-indigo-500" />
         <StatCard title="양품 수량" value={stats.goodMonitors} unit="대" color="bg-emerald-500" />
@@ -144,13 +148,15 @@ const Dashboard: React.FC<DashboardProps> = ({ pallets, insights, onViewList }) 
 };
 
 const StatCard: React.FC<{ title: string; value: number; unit: string; color: string }> = ({ title, value, unit, color }) => (
-  <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-    <p className="text-sm font-medium text-slate-500 mb-2">{title}</p>
-    <div className="flex items-baseline space-x-1">
-      <span className="text-3xl font-bold text-slate-900">{value.toLocaleString()}</span>
-      <span className="text-sm font-medium text-slate-600">{unit}</span>
+  <div className="bg-white p-4 sm:p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+    <div className="flex items-center justify-between gap-3">
+      <p className="text-[11px] sm:text-sm font-medium text-slate-500 truncate">{title}</p>
+      <div className="flex items-baseline gap-1 shrink-0">
+        <span className="text-xl sm:text-3xl font-bold text-slate-900">{value.toLocaleString()}</span>
+        <span className="text-[11px] sm:text-sm font-medium text-slate-600">{unit}</span>
+      </div>
     </div>
-    <div className={`mt-4 h-1 w-12 rounded-full ${color}`} />
+    <div className={`hidden sm:block mt-4 h-1 w-12 rounded-full ${color}`} />
   </div>
 );
 

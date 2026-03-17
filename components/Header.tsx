@@ -1,4 +1,6 @@
 
+// 상단 메뉴(대시보드/목록/등록)를 담고 있는 헤더입니다.
+// 누르면 해당 화면으로 바뀝니다.
 import React from 'react';
 import { LayoutDashboard, ClipboardList, Plus, User } from 'lucide-react';
 

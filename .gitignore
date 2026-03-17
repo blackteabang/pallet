@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# 로컬 데이터 저장 폴더(런타임에 생성/갱신되는 파일)
+p-data/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

@@ -1,4 +1,7 @@
-
+// 이 파일은 앱의 '메인 화면'입니다.
+// - 어떤 화면을 보여줄지 결정하고(대시보드/목록/등록/인쇄)
+// - 데이터(팔레트 목록)를 저장하고 불러오는 일을 담당합니다.
+// 중학생도 이해할 수 있는 한 줄 요약: "앱의 두뇌 역할!"
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Pallet, MonitorGrade, PowerType, FilterOptions, MonitorItem } from './types';
 import { STORAGE_KEY } from './constants';

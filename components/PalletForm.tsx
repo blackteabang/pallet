@@ -1,4 +1,6 @@
 
+// 이 화면은 '새 팔레트 등록/수정' 양식입니다.
+// 필요한 정보를 입력하고 '데이터 저장하기'를 누르면 목록에 반영돼요.
 import React, { useState, useEffect } from 'react';
 import { Pallet, MonitorItem, MonitorGrade, PowerType } from '../types';
 import { DEPARTMENTS, BRANDS, INCHES } from '../constants';
@@ -15,12 +17,15 @@ const PalletForm: React.FC<PalletFormProps> = ({ initialPallet, onSave, onCancel
   const [memo, setMemo] = useState(initialPallet?.memo || '');
   const [items, setItems] = useState<MonitorItem[]>(initialPallet?.items || []);
 
+  // 한글은 1글자가 2~3바이트일 수 있어서,
+  // 글자 수를 정확히 세기 위해 '문자 단위'로 자릅니다.
   const limitToGraphemes = (value: string, max: number) => {
     const segmenter = (Intl as any)?.Segmenter ? new (Intl as any).Segmenter('ko', { granularity: 'grapheme' }) : null;
     const segments = segmenter ? Array.from(segmenter.segment(value), (s: any) => s.segment as string) : Array.from(value);
     return segments.slice(0, max).join('');
   };
 
+  // 예쁜 팔레트 번호를 자동으로 만들어 줍니다. 예) P-20260101-123
   const generatePalletId = () => {
     const now = new Date();
     const dateStr = now.toISOString().slice(0, 10).replace(/-/g, '');
@@ -28,6 +33,7 @@ const PalletForm: React.FC<PalletFormProps> = ({ initialPallet, onSave, onCancel
     return `P-${dateStr}-${random}`;
   };
 
+  // 모니터 항목을 한 줄 추가해요.
   const addItem = () => {
     const newItem: MonitorItem = {
       id: crypto.randomUUID(),
@@ -48,6 +54,7 @@ const PalletForm: React.FC<PalletFormProps> = ({ initialPallet, onSave, onCancel
     setItems(items.filter(item => item.id !== id));
   };
 
+  // 저장 버튼을 눌렀을 때만 실제 저장이 되도록 처리합니다.
   const handleSave = () => {
     if (items.length === 0) {
       alert('최소 하나 이상의 모니터 정보를 입력해주세요.');

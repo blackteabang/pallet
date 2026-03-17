@@ -1,15 +1,20 @@
 @import "tailwindcss";
 
+/* 이 파일은 앱 전체에 공통으로 적용되는 스타일을 모아둔 곳입니다. */
+
 @theme {
+  /* 앱에서 기본으로 사용할 글꼴(한국어 폰트 포함) */
   --font-sans: "Inter", "Noto Sans KR", ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer base {
   body {
+    /* 기본 배경색/글자색(테일윈드 유틸리티를 적용) */
     @apply bg-slate-50 text-slate-900;
   }
 }
 
+/* 스크롤바를 숨기고 싶을 때 사용합니다. (스크롤은 되지만 막대만 안 보임) */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -18,15 +23,19 @@
   scrollbar-width: none;
 }
 
+/* 인쇄할 때만 적용되는 규칙입니다. */
 @media print {
+  /* 화면에서는 보이지만, 인쇄에는 나오지 않게 처리 */
   .no-print {
     display: none !important;
   }
+  /* 인쇄할 때만 보이게 처리 */
   .print-only {
     display: block !important;
   }
 }
 
+/* 기본은 숨기고, 위의 print 규칙에서만 보여줍니다. */
 .print-only {
   display: none;
 }

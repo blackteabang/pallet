@@ -1,3 +1,6 @@
+// 개발 서버 설정 파일입니다.
+// - /api/pallets 라우트로 파일 저장/읽기
+// - p-data 폴더 변경 시 화면이 자동 새로고침되지 않도록 예외 처리
 import path from 'path';
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
@@ -20,6 +23,7 @@ export default defineConfig(({ mode }) => {
         {
           name: 'pallet-api',
           configureServer(server) {
+            // 간단한 파일 API: GET(읽기), POST(저장)
             server.middlewares.use('/api/pallets', async (req, res, next) => {
               try {
                 const method = (req.method || 'GET').toUpperCase();

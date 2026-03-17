@@ -1,4 +1,6 @@
 
+// 이 화면은 '인쇄용 전표(헌품표)'입니다.
+// 깔끔하게 출력하기 위해 표 모양으로 정보를 정리해서 보여줘요.
 import React from 'react';
 import { Pallet, MonitorGrade } from '../types';
 
