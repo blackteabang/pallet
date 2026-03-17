@@ -257,7 +257,7 @@ const PalletList: React.FC<PalletListProps> = ({
             value={filter.palletId}
             onChange={e => setFilter(f => ({ ...f, palletId: e.target.value }))}
             placeholder="예: P-2026..."
-            className="w-full border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+            className="w-full bg-white border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
           />
         </div>
         <div>
@@ -267,7 +267,7 @@ const PalletList: React.FC<PalletListProps> = ({
             value={filter.location}
             onChange={e => setFilter(f => ({ ...f, location: e.target.value }))}
             placeholder="예: A-01"
-            className="w-full border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+            className="w-full bg-white border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
           />
         </div>
         <div>
@@ -275,7 +275,7 @@ const PalletList: React.FC<PalletListProps> = ({
           <select
             value={filter.dept}
             onChange={e => setFilter(f => ({ ...f, dept: e.target.value }))}
-            className="w-full border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+            className="w-full bg-white border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
           >
             <option value="">전체 본부</option>
             {DEPARTMENTS.map(d => <option key={d} value={d}>{d}</option>)}
@@ -286,7 +286,7 @@ const PalletList: React.FC<PalletListProps> = ({
           <select
             value={filter.brand}
             onChange={e => setFilter(f => ({ ...f, brand: e.target.value }))}
-            className="w-full border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+            className="w-full bg-white border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
           >
             <option value="">전체 브랜드</option>
             {BRANDS.map(b => <option key={b} value={b}>{b}</option>)}
@@ -297,7 +297,7 @@ const PalletList: React.FC<PalletListProps> = ({
           <select
             value={filter.inch}
             onChange={e => setFilter(f => ({ ...f, inch: e.target.value }))}
-            className="w-full border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+            className="w-full bg-white border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
           >
             <option value="">전체 인치</option>
             {INCHES.map(i => <option key={i} value={i}>{i}"</option>)}
@@ -308,7 +308,7 @@ const PalletList: React.FC<PalletListProps> = ({
           <select
             value={filter.grade}
             onChange={e => setFilter(f => ({ ...f, grade: e.target.value }))}
-            className="w-full border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+            className="w-full bg-white border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
           >
             <option value="">전체 상태</option>
             <option value={MonitorGrade.GOOD}>양품</option>

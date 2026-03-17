@@ -12,6 +12,11 @@
     /* 기본 배경색/글자색(테일윈드 유틸리티를 적용) */
     @apply bg-slate-50 text-slate-900;
   }
+
+  /* 일부 브라우저에서 input/select가 기본 스타일로 깨져 보일 수 있어 기본값을 잡아줍니다. */
+  input, select, textarea {
+    font: inherit;
+  }
 }
 
 /* 스크롤바를 숨기고 싶을 때 사용합니다. (스크롤은 되지만 막대만 안 보임) */
