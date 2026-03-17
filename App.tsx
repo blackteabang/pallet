@@ -265,7 +265,7 @@ const App: React.FC = () => {
       </main>
 
       <footer className="no-print py-6 text-center text-slate-400 text-xs border-t border-slate-200 bg-white mt-auto">
-        &copy; 2024 Monitor Management System - Pallet Based Inventory Control
+        2026년 개발중 리맨연구개발센터 팔레트 관리 시스템
       </footer>
     </div>
   );

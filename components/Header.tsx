@@ -22,7 +22,7 @@ const Header: React.FC<HeaderProps> = ({ className, currentView, setView }) => {
       <div className="flex items-center gap-3 md:gap-8 min-w-0 flex-1">
         <div className="flex items-center space-x-2 cursor-pointer" onClick={() => setView('dashboard')}>
           <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-white shadow-md shadow-blue-100">M</div>
-          <span className="text-base sm:text-lg font-black text-slate-800 tracking-tighter whitespace-nowrap">팔렛트관리</span>
+          <span className="text-base sm:text-lg font-black text-slate-800 tracking-tighter whitespace-nowrap">팔레트관리</span>
         </div>
 
         <nav className="flex items-center gap-1 overflow-x-auto no-scrollbar -mx-2 px-2 min-w-0">
