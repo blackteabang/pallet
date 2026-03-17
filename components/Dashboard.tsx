@@ -32,6 +32,21 @@ const Dashboard: React.FC<DashboardProps> = ({ pallets, insights, onViewList }) 
     return { totalPallets: pallets.length, totalMonitors, goodMonitors, badMonitors, topBrands };
   }, [pallets]);
 
+  const palletSummaries = React.useMemo(() => {
+    return pallets.slice(0, 12).map(p => {
+      const totalQty = p.items.reduce((sum, item) => sum + item.quantity, 0);
+      const itemNames = Array.from(new Set(p.items.map(i => `${i.brand} ${i.inch}"`)));
+      const itemsText = itemNames.slice(0, 3).join(', ') + (itemNames.length > 3 ? ` 외 ${itemNames.length - 3}` : '');
+      return {
+        id: p.id,
+        location: p.location || '-',
+        department: p.department,
+        itemsText: itemsText || '-',
+        totalQty,
+      };
+    });
+  }, [pallets]);
+
   return (
     <div className="space-y-6 animate-fadeIn">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
@@ -98,6 +113,32 @@ const Dashboard: React.FC<DashboardProps> = ({ pallets, insights, onViewList }) 
           </div>
         </div>
       </div>
+
+      <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+        <div className="flex items-center justify-between gap-3 mb-5">
+          <h3 className="text-lg font-semibold text-slate-900">팔레트 요약</h3>
+          <button onClick={onViewList} className="text-sm font-semibold text-blue-600 hover:text-blue-700">
+            전체 보기
+          </button>
+        </div>
+
+        {palletSummaries.length === 0 ? (
+          <div className="text-center py-10 text-slate-400">등록된 데이터가 없습니다.</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {palletSummaries.map(s => (
+              <PalletSummaryCard
+                key={s.id}
+                id={s.id}
+                location={s.location}
+                department={s.department}
+                itemsText={s.itemsText}
+                totalQty={s.totalQty}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
@@ -110,6 +151,25 @@ const StatCard: React.FC<{ title: string; value: number; unit: string; color: st
       <span className="text-sm font-medium text-slate-600">{unit}</span>
     </div>
     <div className={`mt-4 h-1 w-12 rounded-full ${color}`} />
+  </div>
+);
+
+const PalletSummaryCard: React.FC<{ id: string; location: string; department: string; itemsText: string; totalQty: number }> = ({ id, location, department, itemsText, totalQty }) => (
+  <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/40 hover:bg-white transition-colors">
+    <div className="flex items-start justify-between gap-3">
+      <div className="min-w-0">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="font-mono text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-md">{id}</span>
+          <span className="text-xs font-semibold text-slate-600">{location}</span>
+        </div>
+        <div className="mt-2 text-sm font-bold text-slate-900 break-words">{department}</div>
+      </div>
+      <div className="text-right shrink-0">
+        <div className="text-2xl font-black text-slate-800 leading-none">{totalQty.toLocaleString()}</div>
+      </div>
+    </div>
+
+    <div className="mt-3 text-sm font-semibold text-slate-700 break-words">{itemsText}</div>
   </div>
 );
 

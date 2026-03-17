@@ -56,11 +56,12 @@ const PalletList: React.FC<PalletListProps> = ({
   };
 
   const exportToCsv = () => {
-    const headers = ['팔레트ID', '본부명', '구분', '브랜드', '인치', '전원방식', '수량', '메모', '최종업데이트'];
+    const headers = ['팔레트ID', '본부명', '위치', '구분', '브랜드', '인치', '전원방식', '수량', '메모', '최종업데이트'];
     const rows = filteredPallets.flatMap(p =>
       p.items.map(i => [
         p.id,
         p.department,
+        p.location || '',
         i.grade,
         i.brand,
         i.inch,
@@ -85,6 +86,38 @@ const PalletList: React.FC<PalletListProps> = ({
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const exportToJson = () => {
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      pallets: pallets.slice(0, 300),
+    };
+
+    const jsonContent = JSON.stringify(payload, null, 2);
+    const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `pallet_backup_${new Date().toISOString().slice(0, 10)}.json`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const limitToGraphemes = (value: string, max: number) => {
+    const segmenter = (Intl as any)?.Segmenter ? new (Intl as any).Segmenter('ko', { granularity: 'grapheme' }) : null;
+    const segments = segmenter ? Array.from(segmenter.segment(value), (s: any) => s.segment as string) : Array.from(value);
+    return segments.slice(0, max).join('');
+  };
+
+  const handleLocationChange = (palletId: string, nextLocation: string) => {
+    const limited = limitToGraphemes(nextLocation, 6);
+    const pallet = pallets.find(p => p.id === palletId);
+    if (!pallet) return;
+    if ((pallet.location || '') === limited) return;
+    onUpdatePallet(palletId, { location: limited });
   };
 
   const getPowerLabel = (powerType: PowerType) => {
@@ -115,6 +148,15 @@ const PalletList: React.FC<PalletListProps> = ({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
             <span>Excel 출력</span>
+          </button>
+          <button
+            onClick={exportToJson}
+            className="w-full sm:flex-1 md:w-auto md:flex-none px-4 py-2 border border-slate-300 rounded-lg text-slate-700 font-medium hover:bg-slate-50 flex items-center justify-center space-x-2 transition-colors"
+          >
+            <svg className="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M12 12v7m0 0l-3-3m3 3l3-3M8 7h8M8 3h8" />
+            </svg>
+            <span>로컬 저장</span>
           </button>
           <button
             onClick={onAddNew}
@@ -189,6 +231,15 @@ const PalletList: React.FC<PalletListProps> = ({
                       <span className="text-[10px] text-slate-400 font-medium">{p.lastUpdated}</span>
                     </div>
                     <div className="mt-2 font-bold text-slate-900 text-sm break-words">{p.department}</div>
+                    <div className="mt-1">
+                      <input
+                        type="text"
+                        value={p.location || ''}
+                        onChange={(e) => handleLocationChange(p.id, e.target.value)}
+                        placeholder="-"
+                        className="w-28 max-w-full h-8 px-2 text-[11px] font-semibold border border-slate-200 rounded-md bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                      />
+                    </div>
                   </div>
                   <div className="text-right shrink-0">
                     <div className="text-2xl font-black text-slate-800 leading-none">{totalQty}</div>
@@ -286,6 +337,7 @@ const PalletList: React.FC<PalletListProps> = ({
               <tr className="bg-slate-50 border-b border-slate-200">
                 <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest w-40">팔레트 ID</th>
                 <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">본부</th>
+                <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest w-28">위치</th>
                 <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">적재 품목</th>
                 <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest w-28">전원</th>
                 <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest w-24"></th>
@@ -306,6 +358,15 @@ const PalletList: React.FC<PalletListProps> = ({
                       </td>
                       <td className="px-6 py-5 align-top">
                         <div className="font-bold text-slate-900 text-sm whitespace-nowrap">{p.department}</div>
+                      </td>
+                      <td className="px-6 py-5 align-top">
+                        <input
+                          type="text"
+                          value={p.location || ''}
+                          onChange={(e) => handleLocationChange(p.id, e.target.value)}
+                          placeholder="-"
+                          className="w-24 h-8 px-2 text-sm font-semibold border border-slate-200 rounded-md bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                        />
                       </td>
                       <td className="px-6 py-5 align-top">
                         <div className="space-y-2">
@@ -371,7 +432,7 @@ const PalletList: React.FC<PalletListProps> = ({
                       </td>
                     </tr>
                     <tr>
-                      <td colSpan={7} className="px-6 py-2.5 bg-slate-50/50 border-b border-slate-100 group-hover:bg-slate-100/30 transition-colors">
+                      <td colSpan={8} className="px-6 py-2.5 bg-slate-50/50 border-b border-slate-100 group-hover:bg-slate-100/30 transition-colors">
                         <div className="flex items-start gap-3 text-[11px] text-slate-500">
                           <span className="font-black shrink-0 bg-slate-200 px-1.5 py-0.5 rounded-sm text-slate-600 uppercase tracking-tighter">Memo</span>
                           <span className="flex-1 min-w-0 whitespace-pre-wrap break-words italic font-medium leading-relaxed">
@@ -385,7 +446,7 @@ const PalletList: React.FC<PalletListProps> = ({
               })}
               {filteredPallets.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="px-6 py-24 text-center">
+                  <td colSpan={8} className="px-6 py-24 text-center">
                     <div className="flex flex-col items-center">
                       <svg className="w-12 h-12 text-slate-200 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />

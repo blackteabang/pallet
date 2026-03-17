@@ -21,6 +21,7 @@ export interface MonitorItem {
 export interface Pallet {
   id: string; // P-YYYYMMDD-XXXX
   department: string;
+  location: string;
   lastUpdated: string;
   memo: string;
   items: MonitorItem[];

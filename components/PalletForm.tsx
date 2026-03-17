@@ -11,8 +11,15 @@ interface PalletFormProps {
 
 const PalletForm: React.FC<PalletFormProps> = ({ initialPallet, onSave, onCancel }) => {
   const [department, setDepartment] = useState(initialPallet?.department || DEPARTMENTS[0]);
+  const [location, setLocation] = useState(initialPallet?.location || '');
   const [memo, setMemo] = useState(initialPallet?.memo || '');
   const [items, setItems] = useState<MonitorItem[]>(initialPallet?.items || []);
+
+  const limitToGraphemes = (value: string, max: number) => {
+    const segmenter = (Intl as any)?.Segmenter ? new (Intl as any).Segmenter('ko', { granularity: 'grapheme' }) : null;
+    const segments = segmenter ? Array.from(segmenter.segment(value), (s: any) => s.segment as string) : Array.from(value);
+    return segments.slice(0, max).join('');
+  };
 
   const generatePalletId = () => {
     const now = new Date();
@@ -50,6 +57,7 @@ const PalletForm: React.FC<PalletFormProps> = ({ initialPallet, onSave, onCancel
     const pallet: Pallet = {
       id: initialPallet?.id || generatePalletId(),
       department,
+      location: location.trim(),
       memo,
       lastUpdated: new Date().toLocaleString(),
       items: items.map(({ id, ...rest }) => ({ ...rest, id, quantity: Number(rest.quantity) || 1 })), // Ensure unique IDs and valid quantity
@@ -67,7 +75,7 @@ const PalletForm: React.FC<PalletFormProps> = ({ initialPallet, onSave, onCancel
       </div>
 
       <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
             <label className="block text-sm font-bold text-slate-700 mb-2">자산 주체 본부 *</label>
             <select 
@@ -85,6 +93,16 @@ const PalletForm: React.FC<PalletFormProps> = ({ initialPallet, onSave, onCancel
               value={memo}
               onChange={e => setMemo(e.target.value)}
               placeholder="특이사항 입력"
+              className="w-full border-slate-200 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-bold text-slate-700 mb-2">팔레트 위치 (선택)</label>
+            <input
+              type="text"
+              value={location}
+              onChange={e => setLocation(limitToGraphemes(e.target.value, 6))}
+              placeholder="예: A-01"
               className="w-full border-slate-200 rounded-lg focus:ring-blue-500 focus:border-blue-500"
             />
           </div>

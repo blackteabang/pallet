@@ -1,0 +1,22 @@
+{
+  "updatedAt": "2026-03-17T05:41:55.594Z",
+  "pallets": [
+    {
+      "id": "P-20260317-268",
+      "department": "영업1본부",
+      "location": "A34-2층",
+      "memo": "",
+      "lastUpdated": "2026. 3. 17. 오후 2:41:55",
+      "items": [
+        {
+          "grade": "양품",
+          "brand": "삼성",
+          "inch": "24",
+          "powerType": "파워모델",
+          "quantity": 121,
+          "id": "891f41ac-afaa-486b-9e3a-128e3490227e"
+        }
+      ]
+    }
+  ]
+}
