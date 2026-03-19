@@ -45,6 +45,7 @@ const Dashboard: React.FC<DashboardProps> = ({ pallets, insights, onViewList }) 
         id: p.id,
         location: p.location || '-',
         department: p.department,
+        customer: p.customer || '',
         itemsText: itemsText || '-',
         totalQty,
       };
@@ -136,6 +137,7 @@ const Dashboard: React.FC<DashboardProps> = ({ pallets, insights, onViewList }) 
                 id={s.id}
                 location={s.location}
                 department={s.department}
+                customer={s.customer}
                 itemsText={s.itemsText}
                 totalQty={s.totalQty}
               />
@@ -160,7 +162,7 @@ const StatCard: React.FC<{ title: string; value: number; unit: string; color: st
   </div>
 );
 
-const PalletSummaryCard: React.FC<{ id: string; location: string; department: string; itemsText: string; totalQty: number }> = ({ id, location, department, itemsText, totalQty }) => (
+const PalletSummaryCard: React.FC<{ id: string; location: string; department: string; customer: string; itemsText: string; totalQty: number }> = ({ id, location, department, customer, itemsText, totalQty }) => (
   <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/40 hover:bg-white transition-colors">
     <div className="flex items-start justify-between gap-3">
       <div className="min-w-0">
@@ -169,6 +171,9 @@ const PalletSummaryCard: React.FC<{ id: string; location: string; department: st
           <span className="text-xs font-semibold text-slate-600">{location}</span>
         </div>
         <div className="mt-2 text-sm font-bold text-slate-900 break-words">{department}</div>
+        {!!customer && (
+          <div className="mt-1 text-[11px] font-semibold text-slate-600 break-words">거래처: {customer}</div>
+        )}
       </div>
       <div className="text-right shrink-0">
         <div className="text-2xl font-black text-slate-800 leading-none">{totalQty.toLocaleString()}</div>
