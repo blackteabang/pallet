@@ -24,6 +24,7 @@ export interface MonitorItem {
 export interface Pallet {
   id: string;           // 팔레트 번호 예) P-20260101-001
   department: string;   // 해당 자산의 본부
+  customer: string;     // 거래처(선택)
   location: string;     // 창고에서의 위치(최대 6글자)
   lastUpdated: string;  // 마지막 수정 시간(문장 형태)
   memo: string;         // 메모

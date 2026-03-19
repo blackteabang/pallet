@@ -13,6 +13,7 @@ interface PalletFormProps {
 
 const PalletForm: React.FC<PalletFormProps> = ({ initialPallet, onSave, onCancel }) => {
   const [department, setDepartment] = useState(initialPallet?.department || DEPARTMENTS[0]);
+  const [customer, setCustomer] = useState(initialPallet?.customer || '');
   const [location, setLocation] = useState(initialPallet?.location || '');
   const [memo, setMemo] = useState(initialPallet?.memo || '');
   const [items, setItems] = useState<MonitorItem[]>(initialPallet?.items || []);
@@ -64,6 +65,7 @@ const PalletForm: React.FC<PalletFormProps> = ({ initialPallet, onSave, onCancel
     const pallet: Pallet = {
       id: initialPallet?.id || generatePalletId(),
       department,
+      customer: customer.trim(),
       location: location.trim(),
       memo,
       lastUpdated: new Date().toLocaleString(),
@@ -82,7 +84,7 @@ const PalletForm: React.FC<PalletFormProps> = ({ initialPallet, onSave, onCancel
       </div>
 
       <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div>
             <label className="block text-sm font-bold text-slate-700 mb-2">자산 주체 본부 *</label>
             <select 
@@ -92,6 +94,16 @@ const PalletForm: React.FC<PalletFormProps> = ({ initialPallet, onSave, onCancel
             >
               {DEPARTMENTS.map(d => <option key={d} value={d}>{d}</option>)}
             </select>
+          </div>
+          <div>
+            <label className="block text-sm font-bold text-slate-700 mb-2">거래처 (선택)</label>
+            <input
+              type="text"
+              value={customer}
+              onChange={e => setCustomer(e.target.value)}
+              placeholder="예: 리맨"
+              className="w-full border-slate-200 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+            />
           </div>
           <div>
             <label className="block text-sm font-bold text-slate-700 mb-2">메모 (선택)</label>

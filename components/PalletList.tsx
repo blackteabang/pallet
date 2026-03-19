@@ -76,11 +76,12 @@ const PalletList: React.FC<PalletListProps> = ({
 
   // 엑셀에서 열 수 있는 CSV 파일로 저장해요.
   const exportToCsv = () => {
-    const headers = ['팔레트ID', '본부명', '위치', '구분', '브랜드', '인치', '전원방식', '수량', '메모', '최종업데이트'];
+    const headers = ['팔레트ID', '본부명', '거래처', '위치', '구분', '브랜드', '인치', '전원방식', '수량', '메모', '최종업데이트'];
     const rows = filteredPallets.flatMap(p =>
       p.items.map(i => [
         p.id,
         p.department,
+        p.customer || '',
         p.location || '',
         i.grade,
         i.brand,
@@ -342,6 +343,11 @@ const PalletList: React.FC<PalletListProps> = ({
                         <span className="text-[10px] text-slate-400 font-medium">{p.lastUpdated}</span>
                       </div>
                       <div className="mt-2 font-bold text-slate-900 text-sm break-words">{p.department}</div>
+                      {!!p.customer && (
+                        <div className="mt-1 text-[11px] font-semibold text-slate-600 break-words">
+                          거래처: {p.customer}
+                        </div>
+                      )}
                       <div className="mt-1">
                         <input
                           type="text"
@@ -451,6 +457,7 @@ const PalletList: React.FC<PalletListProps> = ({
               <tr className="bg-slate-50 border-b border-slate-200">
                 <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest w-40">팔레트 ID</th>
                 <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">본부</th>
+                <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">거래처</th>
                 <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest w-28">위치</th>
                 <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">적재 품목</th>
                 <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest w-28">전원</th>
@@ -472,6 +479,9 @@ const PalletList: React.FC<PalletListProps> = ({
                       </td>
                       <td className="px-6 py-5 align-top">
                         <div className="font-bold text-slate-900 text-sm whitespace-nowrap">{p.department}</div>
+                      </td>
+                      <td className="px-6 py-5 align-top">
+                        <div className="text-sm font-semibold text-slate-700 whitespace-nowrap">{p.customer || '-'}</div>
                       </td>
                       <td className="px-6 py-5 align-top">
                         <input

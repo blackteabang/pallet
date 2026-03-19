@@ -46,6 +46,7 @@ const ManifestView: React.FC<ManifestViewProps> = ({ pallet, onBack }) => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-slate-900 border-2 border-slate-900 mb-8">
           <InfoBox label="팔레트 ID" value={pallet.id} mono />
           <InfoBox label="자산 주체 본부" value={pallet.department} />
+          <InfoBox label="거래처" value={pallet.customer || '-'} />
           <InfoBox label="팔레트 위치" value={pallet.location || '-'} />
           <InfoBox label="업데이트 일시" value={pallet.lastUpdated} />
           <InfoBox label="총 적재 수량" value={`${totalQty} 대`} highlight />

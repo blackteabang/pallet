@@ -62,6 +62,7 @@ const readPalletsFromDb = async (): Promise<Pallet[] | null> => {
     if (!Array.isArray(value)) return null;
     return value.map((p: any) => ({
       ...p,
+      customer: typeof p?.customer === 'string' ? p.customer : '',
       location: typeof p?.location === 'string' ? p.location : '',
     }));
   } catch {
@@ -83,6 +84,7 @@ const readPalletsFromFile = async (): Promise<Pallet[] | null> => {
     if (!pallets) return null;
     return pallets.map((p: any) => ({
       ...p,
+      customer: typeof p?.customer === 'string' ? p.customer : '',
       location: typeof p?.location === 'string' ? p.location : '',
     }));
   } catch {
@@ -146,6 +148,7 @@ const App: React.FC = () => {
 
         const normalized = parsed.map((p: any) => ({
           ...p,
+          customer: typeof p?.customer === 'string' ? p.customer : '',
           location: typeof p?.location === 'string' ? p.location : '',
         }));
         lastPersistedRef.current = JSON.stringify(normalized.slice(0, 300));
