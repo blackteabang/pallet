@@ -38,6 +38,7 @@ const PalletList: React.FC<PalletListProps> = ({
     brand: '',
     grade: '',
     palletId: '',
+    customer: '',
     location: '',
     inch: '',
   });
@@ -50,6 +51,7 @@ const PalletList: React.FC<PalletListProps> = ({
   // 선택한 조건에 맞는 데이터만 골라 보여줍니다.
   const filteredPallets = useMemo(() => {
     const palletIdQuery = filter.palletId.trim().toLowerCase();
+    const customerQuery = filter.customer.trim().toLowerCase();
     const locationQuery = filter.location.trim().toLowerCase();
 
     return pallets.filter(p => {
@@ -58,8 +60,9 @@ const PalletList: React.FC<PalletListProps> = ({
       const matchGrade = !filter.grade || p.items.some(i => i.grade === filter.grade);
       const matchInch = !filter.inch || p.items.some(i => i.inch === filter.inch);
       const matchPalletId = !palletIdQuery || String(p.id).toLowerCase().includes(palletIdQuery);
+      const matchCustomer = !customerQuery || String(p.customer || '').toLowerCase().includes(customerQuery);
       const matchLocation = !locationQuery || String(p.location || '').toLowerCase().includes(locationQuery);
-      return matchDept && matchBrand && matchGrade && matchInch && matchPalletId && matchLocation;
+      return matchDept && matchBrand && matchGrade && matchInch && matchPalletId && matchCustomer && matchLocation;
     });
   }, [pallets, filter]);
 
@@ -258,6 +261,16 @@ const PalletList: React.FC<PalletListProps> = ({
             value={filter.palletId}
             onChange={e => setFilter(f => ({ ...f, palletId: e.target.value }))}
             placeholder="예: P-2026..."
+            className="w-full h-11 px-3 bg-white border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+          />
+        </div>
+        <div className="md:min-w-[140px] md:flex-1">
+          <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 tracking-wider md:sr-only">거래처</label>
+          <input
+            type="text"
+            value={filter.customer}
+            onChange={e => setFilter(f => ({ ...f, customer: e.target.value }))}
+            placeholder="예: 리맨"
             className="w-full h-11 px-3 bg-white border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
           />
         </div>
