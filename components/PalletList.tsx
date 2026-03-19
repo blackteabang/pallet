@@ -306,25 +306,25 @@ const PalletList: React.FC<PalletListProps> = ({
             {BRANDS.map(b => <option key={b} value={b}>{b}</option>)}
           </select>
         </div>
-        <div className="md:min-w-[120px] md:flex-1">
+        <div className="md:min-w-[96px] md:flex-1">
           <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 tracking-wider md:sr-only">인치</label>
           <select
             value={filter.inch}
             onChange={e => setFilter(f => ({ ...f, inch: e.target.value }))}
             className="w-full h-11 px-3 bg-white border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
           >
-            <option value="">전체 인치</option>
+            <option value="">인치</option>
             {INCHES.map(i => <option key={i} value={i}>{i}"</option>)}
           </select>
         </div>
-        <div className="md:min-w-[120px] md:flex-1">
+        <div className="md:min-w-[96px] md:flex-1">
           <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 tracking-wider md:sr-only">양/불 구분</label>
           <select
             value={filter.grade}
             onChange={e => setFilter(f => ({ ...f, grade: e.target.value }))}
             className="w-full h-11 px-3 bg-white border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
           >
-            <option value="">전체 상태</option>
+            <option value="">상태</option>
             <option value={MonitorGrade.GOOD}>양품</option>
             <option value={MonitorGrade.BAD}>불량</option>
           </select>
